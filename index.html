@@ -3,220 +3,234 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Brand X Space Warp</title>
+    <title>Brand X - Space Portal</title>
+    
     <style>
-        /* --- 1. إعدادات الصفحة الأساسية --- */
         body, html {
             margin: 0;
             padding: 0;
             width: 100%;
             height: 100%;
             overflow: hidden;
-            background-color: #000; /* خلفية سوداء تماماً */
+            background-color: #000;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            font-family: 'Segoe UI', sans-serif;
         }
 
-        /* --- 2. كانفاس النجوم (النجوم التي تتحرك للخارج) --- */
+        /* حاوية النجوم */
         #starfield {
-            position: absolute;
+            position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: 0;
+            z-index: 1;
         }
 
-        /* --- 3. حاوية المحتوى (فوق النجوم) --- */
-        .content {
+        /* واجهة الموقع فوق النجوم */
+        .overlay {
             position: relative;
             z-index: 10;
             display: flex;
             flex-direction: column;
             align-items: center;
-            pointer-events: none; /* لكي لا تعيق النقر على اللوجو */
+            text-align: center;
+            width: 100%;
         }
 
-        /* --- 4. اللوجو (التفاعل 360 درجة) --- */
-        .logo-box {
-            width: 250px;
-            height: 200px;
-            perspective: 1000px;
+        /* اللوجو (البراند) */
+        .brand-logo {
+            width: 220px;
+            height: 220px;
             cursor: grab;
-            pointer-events: auto; /* إعادة تفعيل اللمس للوجو فقط */
+            perspective: 1000px;
             touch-action: none;
-            margin-bottom: 30px;
+            margin-bottom: 10px;
         }
 
-        #logo-3d {
+        #logo-mesh {
             width: 100%;
             height: 100%;
             transform-style: preserve-3d;
-            transition: transform 0.1s ease-out;
-            filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.8));
+            transition: transform 0.1s linear;
+            filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.9));
         }
 
-        /* --- 5. القائمة (نفس شكل الصورة) --- */
-        .menu {
+        /* القائمة */
+        .main-menu {
             display: flex;
             flex-direction: column;
-            gap: 20px;
-            text-align: center;
-            pointer-events: auto;
+            gap: 25px;
         }
 
-        .menu-btn {
-            color: #fff;
-            font-size: 1.5rem;
+        .item {
+            color: #ffffff;
+            font-size: 1.6rem;
             font-weight: 900;
             letter-spacing: 6px;
+            text-decoration: none;
             cursor: pointer;
             transition: 0.3s;
-            text-shadow: 0 0 5px rgba(255,255,255,0.3);
+            opacity: 0.8;
             user-select: none;
         }
 
-        .menu-btn:hover {
-            transform: scale(1.1);
-            text-shadow: 0 0 20px #fff;
+        .item:hover {
+            opacity: 1;
+            text-shadow: 0 0 20px #ffffff;
+            transform: scale(1.05);
         }
 
-        .menu-btn:active {
-            color: #00ff00; /* يتوهج بالأخضر عند الضغط */
+        .item:active {
+            color: #00ff00; 
             text-shadow: 0 0 30px #00ff00;
         }
 
-        /* --- 6. أيقونات السوشيال --- */
-        .socials {
+        /* شريط السوشيال ميديا */
+        .social-bar {
             position: absolute;
-            bottom: 30px;
+            bottom: 40px;
+            z-index: 20;
             display: flex;
-            gap: 20px;
-            z-index: 10;
-            pointer-events: auto;
+            gap: 30px;
         }
-        .social-icon { width: 25px; height: 25px; fill: #fff; opacity: 0.6; transition: 0.3s; }
-        .social-icon:hover { opacity: 1; transform: scale(1.2); }
 
+        .social-link {
+            text-decoration: none;
+            transition: 0.3s;
+        }
+
+        .social-link svg {
+            width: 28px;
+            height: 28px;
+            fill: white;
+            opacity: 0.6;
+            transition: 0.3s;
+        }
+
+        .social-link:hover svg {
+            opacity: 1;
+            transform: translateY(-5px) scale(1.1);
+            filter: drop-shadow(0 0 8px white);
+        }
     </style>
 </head>
 <body>
 
     <canvas id="starfield"></canvas>
 
-    <div class="content">
-        <div class="logo-box" id="logoArea">
-            <div id="logo-3d">
-                <svg viewBox="0 0 200 150">
-                    <g stroke="white" stroke-width="8" fill="none" stroke-linecap="round">
-                        <path d="M50,120 L150,30" />
-                        <path d="M150,120 L50,30" stroke="#00ff00" style="opacity: 0.8;" />
-                        <path d="M70,135 Q100,125 130,135" stroke-width="3" />
+    <div class="overlay">
+        <div class="brand-logo" id="logoContainer">
+            <div id="logo-mesh">
+                <svg viewBox="0 0 200 200">
+                    <g stroke="white" stroke-width="10" fill="none" stroke-linecap="round">
+                        <path d="M60,140 L140,60" />
+                        <path d="M140,140 L60,60" stroke="#00ff00" />
+                        <path d="M80,165 Q100,155 120,165" stroke-width="4" />
                     </g>
+                    <text x="72" y="190" fill="white" font-size="11" font-weight="bold" style="letter-spacing: 2px;">BRAND X</text>
                 </svg>
             </div>
         </div>
 
-        <div class="menu">
-            <div class="menu-btn">HOME</div>
-            <div class="menu-btn">CATALOG</div>
-            <div class="menu-btn">CONTACT</div>
-        </div>
+        <nav class="main-menu">
+            <div class="item">HOME</div>
+            <div class="item">CATALOG</div>
+            <div class="item">CONTACT</div>
+        </nav>
     </div>
 
-    <div class="socials">
-        <svg class="social-icon" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.069-4.85.069-3.204 0-3.584-.012-4.849-.069-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
-        <svg class="social-icon" viewBox="0 0 24 24"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.65-1.55-1.09-.01 2.83.03 5.66-.02 8.5-.16 2.61-2.14 4.86-4.73 5.37-2.67.55-5.5-1.09-6.18-3.69-.69-2.58 1.25-5.22 3.93-5.32v4.02c-1.23-.05-2.26 1.18-2.03 2.43.21 1.16 1.47 1.83 2.52 1.46 1.15-.36 1.84-1.58 1.68-2.78-.05-4.46-.02-8.91-.03-13.37-.01-1.63-.01-3.26-.01-4.89-.84.23-1.69.45-2.54.67-.01-.13-.02-.27-.03-.4 1.05-.29 2.1-.58 3.16-.89z"/></svg>
+    <div class="social-bar">
+        <a href="https://www.instagram.com/xce____7oda__x?igsh=cmI5aXd4OHp1cDhl" target="_blank" class="social-link">
+            <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.069-4.85.069-3.204 0-3.584-.012-4.849-.069-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+        </a>
+        <a href="https://www.tiktok.com/@628..2?_r=1&_t=ZS-93ujRpfUhj2" target="_blank" class="social-link">
+            <svg viewBox="0 0 24 24"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.65-1.55-1.09-.01 2.83.03 5.66-.02 8.5-.16 2.61-2.14 4.86-4.73 5.37-2.67.55-5.5-1.09-6.18-3.69-.69-2.58 1.25-5.22 3.93-5.32v4.02c-1.23-.05-2.26 1.18-2.03 2.43.21 1.16 1.47 1.83 2.52 1.46 1.15-.36 1.84-1.58 1.68-2.78-.05-4.46-.02-8.91-.03-13.37-.01-1.63-.01-3.26-.01-4.89-.84.23-1.69.45-2.54.67-.01-.13-.02-.27-.03-.4 1.05-.29 2.1-.58 3.16-.89z"/></svg>
+        </a>
     </div>
 
     <script>
-        // --- 1. نظام النجوم المتحركة للخارج (Warp Speed) ---
+        // 1. برمجة النجوم (الانطلاق للخارج - Warp Speed)
         const canvas = document.getElementById('starfield');
         const ctx = canvas.getContext('2d');
         let stars = [];
-        const numStars = 600;
-        let speed = 2;
+        const starCount = 500;
 
-        function initStars() {
+        function init() {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
             stars = [];
-            for (let i = 0; i < numStars; i++) {
+            for(let i=0; i<starCount; i++) {
                 stars.push({
-                    x: Math.random() * canvas.width - canvas.width / 2,
-                    y: Math.random() * canvas.height - canvas.height / 2,
+                    x: Math.random() * canvas.width - canvas.width/2,
+                    y: Math.random() * canvas.height - canvas.height/2,
                     z: Math.random() * canvas.width,
-                    o: Math.random() // لعشوائية السطوع
+                    o: Math.random()
                 });
             }
         }
 
-        function updateStars() {
+        function draw() {
             ctx.fillStyle = "black";
             ctx.fillRect(0, 0, canvas.width, canvas.height);
-            
-            for (let i = 0; i < numStars; i++) {
-                let star = stars[i];
-                star.z -= speed;
 
-                if (star.z <= 0) {
-                    star.z = canvas.width;
-                }
+            for(let i=0; i<starCount; i++) {
+                let s = stars[i];
+                s.z -= 6; // سرعة الانطلاق
+                if (s.z <= 0) s.z = canvas.width;
 
-                // تحويل الإحداثيات من 3D إلى 2D
-                let sx = (star.x / star.z) * canvas.width + canvas.width / 2;
-                let sy = (star.y / star.z) * canvas.height + canvas.height / 2;
-                let size = (1 - star.z / canvas.width) * 3;
+                let x = (s.x / s.z) * canvas.width + canvas.width/2;
+                let y = (s.y / s.z) * canvas.height + canvas.height/2;
+                let radius = (1 - s.z/canvas.width) * 4;
 
                 ctx.beginPath();
-                ctx.fillStyle = `rgba(255, 255, 255, ${star.o})`;
-                ctx.arc(sx, sy, size, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(255, 255, 255, ${s.o})`;
+                ctx.arc(x, y, radius, 0, Math.PI*2);
                 ctx.fill();
             }
-            requestAnimationFrame(updateStars);
+            requestAnimationFrame(draw);
         }
 
-        window.addEventListener('resize', initStars);
-        initStars();
-        updateStars();
+        window.addEventListener('resize', init);
+        init();
+        draw();
 
-        // --- 2. تفاعل اللوجو 360 درجة ---
-        const logoArea = document.getElementById('logoArea');
-        const logo3D = document.getElementById('logo-3d');
-        let isDragging = false;
+        // 2. حركة اللوجو 360 درجة (ثابت في مكانه ويدور)
+        const container = document.getElementById('logoContainer');
+        const mesh = document.getElementById('logo-mesh');
+        let isDown = false;
         let startX, startY;
 
-        const startMove = (clientX, clientY) => {
-            isDragging = true;
-            startX = clientX;
-            startY = clientY;
+        const start = (e) => {
+            isDown = true;
+            startX = (e.pageX || e.touches[0].pageX);
+            startY = (e.pageY || e.touches[0].pageY);
+            mesh.style.transition = "none";
         };
 
-        const onMove = (clientX, clientY) => {
-            if (!isDragging) return;
-            const dx = clientX - startX;
-            const dy = clientY - startY;
-            logo3D.style.transform = `rotateY(${dx * 0.8}deg) rotateX(${-dy * 0.8}deg)`;
+        const move = (e) => {
+            if(!isDown) return;
+            let x = (e.pageX || e.touches[0].pageX);
+            let y = (e.pageY || e.touches[0].pageY);
+            let rotY = (x - startX) * 0.6;
+            let rotX = (startY - y) * 0.6;
+            mesh.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg)`;
         };
 
-        const stopMove = () => {
-            isDragging = false;
-            logo3D.style.transition = "transform 0.5s ease";
-            logo3D.style.transform = `rotateY(0deg) rotateX(0deg)`;
-            setTimeout(() => { logo3D.style.transition = "transform 0.1s ease-out"; }, 500);
+        const end = () => {
+            isDown = false;
+            mesh.style.transition = "transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275)";
+            mesh.style.transform = `rotateX(0deg) rotateY(0deg)`;
         };
 
-        // Events
-        logoArea.addEventListener('mousedown', (e) => startMove(e.clientX, e.clientY));
-        window.addEventListener('mousemove', (e) => onMove(e.clientX, e.clientY));
-        window.addEventListener('mouseup', stopMove);
-        
-        logoArea.addEventListener('touchstart', (e) => startMove(e.touches[0].clientX, e.touches[0].clientY));
-        window.addEventListener('touchmove', (e) => onMove(e.touches[0].clientX, e.touches[0].clientY));
-        window.addEventListener('touchend', stopMove);
+        container.addEventListener('mousedown', start);
+        window.addEventListener('mousemove', move);
+        window.addEventListener('mouseup', end);
+        container.addEventListener('touchstart', start);
+        window.addEventListener('touchmove', move);
+        window.addEventListener('touchend', end);
 
     </script>
 </body>
