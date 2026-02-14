@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brand X Space</title>
+    <style>
+        /* --- إعدادات الصفحة الأساسية --- */
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden; /* لمنع ظهور أشرطة التمرير */
+            background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: white;
+        }
+
+        /* --- خلفية النجوم المتحركة --- */
+        /* وظيفة لإنشاء النجوم عشوائياً باستخدام CSS Box Shadow */
+        .stars-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .star {
+            width: 1px;
+            height: 1px;
+            background: transparent;
+            box-shadow: 1744px 122px #FFF , 134px 1321px #FFF , 421px 561px #FFF; /* سيتم استبدال هذا بالجافاسكريبت ليكون عشوائياً */
+            animation: animStar 50s linear infinite;
+        }
+        
+        .star:after {
+            content: " ";
+            position: absolute;
+            top: 2000px;
+            width: 1px;
+            height: 1px;
+            background: transparent;
+            box-shadow: 1744px 122px #FFF , 134px 1321px #FFF , 421px 561px #FFF;
+        }
+
+        .star2 {
+            width: 2px;
+            height: 2px;
+            animation: animStar 100s linear infinite;
+        }
+        
+        .star3 {
+            width: 3px;
+            height: 3px;
+            animation: animStar 150s linear infinite;
+        }
+
+        @keyframes animStar {
+            from { transform: translateY(0px); }
+            to { transform: translateY(-2000px); }
+        }
+
+        /* --- تصميم اللوجو --- */
+        #logo-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%); /* التمركز المبدئي */
+            width: 150px;
+            height: 150px;
+            z-index: 100; /* ليكون فوق النجوم */
+            cursor: grab;
+            perspective: 1000px; /* لإعطاء تأثير العمق 3D */
+            touch-action: none; /* لمنع تحريك الشاشة عند لمس اللوجو */
+        }
+
+        #logo-container:active {
+            cursor: grabbing;
+        }
+
+        .brand-x {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.1s ease-out; /* حركة ناعمة */
+            filter: drop-shadow(0 0 15px #00ff00) drop-shadow(0 0 30px #00ff00);
+        }
+
+        /* رسم حرف X باستخدام SVG */
+        svg {
+            width: 100%;
+            height: 100%;
+            fill: none;
+            stroke: #00ff00; /* لون أخضر */
+            stroke-width: 15;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        /* --- محتوى ترحيبي بسيط --- */
+        .welcome-text {
+            position: absolute;
+            bottom: 50px;
+            width: 100%;
+            text-align: center;
+            z-index: 10;
+            pointer-events: none;
+        }
+        
+        h1 {
+            font-size: 2rem;
+            text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+            letter-spacing: 2px;
+        }
+        
+        p {
+            color: #aaa;
+            font-size: 0.9rem;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div id="stars" class="stars-container star"></div>
+    <div id="stars2" class="stars-container star2"></div>
+    <div id="stars3" class="stars-container star3"></div>
+
+    <div id="logo-container">
+        <div class="brand-x" id="brandLogo">
+            <svg viewBox="0 0 100 100">
+                <line x1="20" y1="20" x2="80" y2="80" />
+                <line x1="80" y1="20" x2="20" y2="80" />
+            </svg>
+        </div>
+    </div>
+
+    <div class="welcome-text">
+        <h1>BRAND X</h1>
+        <p>حرك اللوجو لتكتشف الفضاء</p>
+    </div>
+
+    <script>
+        // --- 1. توليد النجوم بشكل عشوائي لتبدو طبيعية ---
+        function generateBoxShadows(n) {
+            let value = '${Math.random() * 2000}px ${Math.random() * 2000}px #FFF';
+            for (let i = 2; i <= n; i++) {
+                value += `, ${Math.random() * 2000}px ${Math.random() * 2000}px #FFF`;
+            }
+            return value;
+        }
+
+        document.getElementById('stars').style.boxShadow = generateBoxShadows(700);
+        document.getElementById('stars2').style.boxShadow = generateBoxShadows(200);
+        document.getElementById('stars3').style.boxShadow = generateBoxShadows(100);
+
+
+        // --- 2. منطق تحريك وتدوير اللوجو (اللمس والماوس) ---
+        const container = document.getElementById('logo-container');
+        const logo = document.getElementById('brandLogo');
+
+        let isDragging = false;
+        let startX, startY;
+        let initialLeft, initialTop;
+        
+        // حساب الحركة والتدوير
+        function handleStart(clientX, clientY) {
+            isDragging = true;
+            startX = clientX;
+            startY = clientY;
+            
+            // الحصول على الموقع الحالي
+            const style = window.getComputedStyle(container);
+            const matrix = new WebKitCSSMatrix(style.transform);
+            initialLeft = matrix.m41;
+            initialTop = matrix.m42; // لاحظ: هذا للتحريك باستخدام transform وليس top/left ليكون أسرع
+            
+            // في حالة لم يكن transform set نستخدم الـ offset
+            if(isNaN(initialLeft)) {
+                initialLeft = 0; 
+                initialTop = 0;
+            }
+        }
+
+        function handleMove(clientX, clientY) {
+            if (!isDragging) return;
+
+            const deltaX = clientX - startX;
+            const deltaY = clientY - startY;
+
+            // 1. تحريك العنصر (Position)
+            // سنستخدم style.left/top لأننا بدأنا بـ translate(-50%, -50%) في CSS
+            // الطريقة الأبسط هنا هي تعديل top/left مباشرة بناءً على حركة الماوس
+            
+            container.style.transform = `translate(calc(-50% + ${deltaX}px), calc(-50% + ${deltaY}px))`;
+            // ملاحظة: لتحريك حر تماماً وتراكمي يحتاج منطق أكثر تعقيداً، 
+            // لكن هنا سنجعله يتحرك مع إصبعك ويعود للمركز عند الإفلات أو يبقى مكانه حسب الرغبة.
+            // لجعل الكود أبسط وأكثر متعة، سأجعل الدوران يعتمد على سرعة/مسافة السحب.
+
+            // 2. تدوير العنصر (Rotation 3D)
+            // كلما حركت إصبعك أكثر، زاد الدوران
+            // X axis movement rotates around Y axis
+            // Y axis movement rotates around X axis
+            const rotateY = deltaX * 1.5; // سرعة الدوران
+            const rotateX = -deltaY * 1.5;
+
+            logo.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+        }
+
+        function handleEnd() {
+            isDragging = false;
+            // اختياري: إعادة اللوجو لوضعه الطبيعي ببطء عند ترك الإصبع
+             logo.style.transform = `rotateX(0deg) rotateY(0deg)`;
+             // container.style.transform = `translate(-50%, -50%)`; // فعل هذا السطر إذا أردته يرجع للمنتصف
+        }
+
+        // --- مستمعات الأحداث (الماوس) ---
+        container.addEventListener('mousedown', (e) => handleStart(e.clientX, e.clientY));
+        window.addEventListener('mousemove', (e) => handleMove(e.clientX, e.clientY));
+        window.addEventListener('mouseup', handleEnd);
+
+        // --- مستمعات الأحداث (اللمس - الموبايل) ---
+        container.addEventListener('touchstart', (e) => {
+            handleStart(e.touches[0].clientX, e.touches[0].clientY);
+        }, {passive: false});
+
+        window.addEventListener('touchmove', (e) => {
+            handleMove(e.touches[0].clientX, e.touches[0].clientY);
+        }, {passive: false});
+
+        window.addEventListener('touchend', handleEnd);
+
+    </script>
+</body>
+</html>
