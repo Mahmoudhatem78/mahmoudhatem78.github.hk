@@ -10,7 +10,7 @@
         :root {
             --gold: #FFD700;
             --soft-gold: rgba(255, 215, 0, 0.4);
-            --glow-color: rgba(255, 255, 255, 0.6); /* لون التوهج حول المنتجات */
+            --glow-white: rgba(255, 255, 255, 0.5);
             --bg-black: #000;
         }
 
@@ -28,86 +28,74 @@
             box-sizing: border-box;
         }
 
-        .active { display: flex; animation: fadeIn 0.5s ease; }
-
+        .active { display: flex; animation: fadeIn 0.8s ease; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
         /* --- الواجهة الرئيسية --- */
         .splash-content { justify-content: space-between; height: 100vh; }
-        .store-name {
-            font-size: 2rem; font-weight: 900; letter-spacing: 10px;
-            text-shadow: 0 0 15px var(--soft-gold); margin-top: 10px;
-        }
+        .store-name { font-size: 2rem; font-weight: 900; letter-spacing: 10px; text-shadow: 0 0 15px var(--soft-gold); margin-top: 10px; }
         .main-menu { display: flex; flex-direction: column; gap: 30px; text-align: center; }
-        .menu-item {
-            font-size: 1.5rem; letter-spacing: 8px; cursor: pointer; opacity: 0.7; transition: 0.3s;
-        }
+        .menu-item { font-size: 1.5rem; letter-spacing: 8px; cursor: pointer; opacity: 0.7; transition: 0.3s; }
         .menu-item:hover { opacity: 1; text-shadow: 0 0 15px white; transform: scale(1.1); }
 
         /* --- شبكة المنتجات --- */
-        .products-grid {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 40px; width: 100%; max-width: 1100px; margin-top: 40px;
-        }
+        .products-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 40px; width: 100%; max-width: 1100px; margin-top: 40px; }
         .product-card {
-            /* خلفية شفافة ومنقطة (Noise) لتقليد الصورة */
-            background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, rgba(0,0,0,0.1) 100%), url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAiklEQVQoU2NkYGD4z8DAwMgAIxhAGCCAGcYEkQABCEF8BCEIE4QIpBjEBGEKQQwgTCHIEKQQYgBhCkGMIEwhiBGECcIYYQZhCqEMwIawQZgCbCA2QhhAGGEGYQrBjGBMIIYwgjCBGMIQZASIEKIQZAgRQhRhCEKEIEUQIgQpghAhSBGECEEKIUIAAPcWCVF7V8/wAAAAAElFTkSuQmCC');
-            border-radius: 15px; padding: 20px; transition: 0.4s; cursor: pointer; text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            background: rgba(255, 255, 255, 0.02); border-radius: 15px; padding: 20px; transition: 0.4s; cursor: pointer; text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.05); backdrop-filter: blur(5px);
         }
-        .product-card:hover {
-            border-color: var(--gold); transform: translateY(-10px);
-        }
-        
-        /* === تعديل توهج الصور === */
-        .img-box {
-            width: 100%; aspect-ratio: 1/1; object-fit: contain; /* contain عشان الصورة كاملة تظهر */
-            /* هذا هو الفلتر السحري لعمل التوهج حول الصورة نفسها */
-            filter: drop-shadow(0 0 20px var(--glow-color)); 
-            transition: 0.3s;
-        }
-        .product-card:hover .img-box {
-            filter: drop-shadow(0 0 30px var(--gold)); /* يزيد التوهج ويصفر عند الهوفر */
+        .product-card:hover { border-color: var(--gold); transform: translateY(-10px); box-shadow: 0 0 30px rgba(255, 215, 0, 0.1); }
+        .img-box { width: 100%; aspect-ratio: 1/1; object-fit: contain; filter: drop-shadow(0 0 15px var(--glow-white)); transition: 0.3s; }
+        .product-card:hover .img-box { filter: drop-shadow(0 0 25px var(--gold)); }
+
+        /* --- صفحة تفاصيل المنتج (الخلفية المتوهجة المتحركة) --- */
+        #productDetailPage {
+            background: radial-gradient(circle at center, #0a0a0a 0%, #000 100%);
+            overflow: hidden;
         }
 
-        /* --- صفحة تفاصيل المنتج --- */
-        .detail-container {
-            display: flex; flex-wrap: wrap; gap: 50px; max-width: 1000px; width: 100%;
-            margin-top: 50px; justify-content: center; align-items: center;
+        /* الإضاءات المتحركة خلف المنتج */
+        .mesh-glow {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1; pointer-events: none;
         }
-        .detail-img {
-            flex: 1; min-width: 300px; max-width: 450px; aspect-ratio: 1/1; object-fit: contain;
-            /* توهج قوي في صفحة التفاصيل */
-            filter: drop-shadow(0 0 35px var(--glow-color));
+
+        .blob {
+            position: absolute; width: 600px; height: 600px; border-radius: 50%;
+            filter: blur(120px); opacity: 0.35; mix-blend-mode: screen;
+            animation: moveBlob 20s infinite alternate;
         }
-        .detail-info { flex: 1; min-width: 300px; display: flex; flex-direction: column; gap: 20px; }
-        .price-tag { font-size: 1.5rem; color: var(--gold); }
+        .blob-1 { background: var(--gold); top: -10%; left: -10%; animation-duration: 15s; }
+        .blob-2 { background: #fff; bottom: -10%; right: -10%; animation-duration: 25s; opacity: 0.2; }
+        .blob-3 { background: #333; top: 40%; left: 30%; animation-duration: 18s; }
+
+        @keyframes moveBlob {
+            0% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(100px, 50px) scale(1.2); }
+            100% { transform: translate(-50px, 150px) scale(0.9); }
+        }
+
+        .detail-container { display: flex; flex-wrap: wrap; gap: 50px; max-width: 1000px; width: 100%; margin-top: 50px; justify-content: center; align-items: center; position: relative; z-index: 2; }
+        .detail-img { flex: 1; min-width: 300px; max-width: 450px; aspect-ratio: 1/1; object-fit: contain; filter: drop-shadow(0 0 40px var(--glow-white)); }
+        .detail-info { flex: 1; min-width: 300px; display: flex; flex-direction: column; gap: 20px; background: rgba(0,0,0,0.4); padding: 30px; border-radius: 20px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.05); }
         
-        .size-selector { display: flex; gap: 10px; margin-top: 10px; }
-        .size-btn { border: 1px solid #444; padding: 10px 20px; cursor: pointer; transition: 0.3s; }
-        .size-btn.selected, .size-btn:hover { border-color: var(--gold); background: var(--gold); color: black; }
+        /* أزرار المقاسات */
+        .size-selector { display: flex; gap: 10px; }
+        .size-btn { border: 1px solid #444; padding: 10px 18px; cursor: pointer; transition: 0.3s; font-size: 0.8rem; }
+        .size-btn.selected, .size-btn:hover { border-color: var(--gold); background: var(--gold); color: black; box-shadow: 0 0 15px var(--soft-gold); }
 
         .qty-input { background: none; border: 1px solid #444; color: white; padding: 10px; width: 60px; text-align: center; }
+        .action-btns { display: flex; flex-direction: column; gap: 15px; }
+        .btn-buy { background: white; color: black; padding: 16px; border: none; font-weight: bold; cursor: pointer; letter-spacing: 2px; transition: 0.3s; }
+        .btn-buy:hover { background: var(--gold); box-shadow: 0 0 25px var(--gold); transform: scale(1.02); }
+        .btn-cart { background: none; color: white; border: 1px solid rgba(255,255,255,0.3); padding: 16px; cursor: pointer; }
 
-        .action-btns { display: flex; flex-direction: column; gap: 15px; margin-top: 20px; }
-        .btn-buy { background: white; color: black; padding: 15px; border: none; font-weight: bold; cursor: pointer; letter-spacing: 2px; transition: 0.3s;}
-        .btn-buy:hover { background: var(--gold); box-shadow: 0 0 20px var(--gold); }
-        .btn-cart { background: none; color: white; border: 1px solid white; padding: 15px; cursor: pointer; }
+        .back-link { align-self: flex-start; cursor: pointer; color: var(--gold); margin-bottom: 20px; font-weight: bold; z-index: 5; }
 
-        .back-link { align-self: flex-start; cursor: pointer; color: var(--gold); margin-bottom: 20px; font-weight: bold; }
-
-        /* قسم الفوتر وطرق الدفع */
-        .footer-bar {
-            display: flex; flex-direction: column; align-items: center; gap: 15px;
-            margin-top: auto; padding-bottom: 30px; width: 100%;
-        }
+        .footer-bar { display: flex; flex-direction: column; align-items: center; gap: 15px; margin-top: auto; padding-bottom: 30px; width: 100%; }
         .social-bar { display: flex; gap: 25px; }
         .social-link svg { width: 22px; fill: white; opacity: 0.6; transition: 0.3s; }
         .social-link:hover svg { opacity: 1; filter: drop-shadow(0 0 8px var(--gold)); }
-        
-        /* أيقونات الدفع (منظر فقط) */
-        .payment-methods { display: flex; gap: 15px; opacity: 0.5; }
-        .payment-icon { width: 35px; height: auto; fill: white; }
 
     </style>
 </head>
@@ -117,7 +105,7 @@
 
     <div id="splashPage" class="page splash-content active">
         <div style="text-align: center;">
-            <svg width="120" height="120" viewBox="0 0 200 200" id="logoContainer">
+            <svg width="100" height="100" viewBox="0 0 200 200" id="logoContainer">
                 <g id="logo-mesh" stroke="white" stroke-width="15" fill="none" style="filter: drop-shadow(0 0 10px var(--gold));">
                     <path d="M50,150 L150,50" /><path d="M150,150 L50,50" />
                 </g>
@@ -131,77 +119,66 @@
         </nav>
         <div class="footer-bar">
             <div class="social-bar">
-                 <a href="https://www.instagram.com/xce____7oda__x?igsh=cmI5aXd4OHp1cDhl" target="_blank" class="social-link"><svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.069-4.85.069-3.204 0-3.584-.012-4.849-.069-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg></a>
+                <a href="https://www.instagram.com/xce____7oda__x?igsh=cmI5aXd4OHp1cDhl" target="_blank" class="social-link"><svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.069-4.85.069-3.204 0-3.584-.012-4.849-.069-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg></a>
                 <a href="https://www.tiktok.com/@628..2?_r=1&_t=ZS-93ujRpfUhj2" target="_blank" class="social-link"><svg viewBox="0 0 24 24"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.65-1.55-1.09-.01 2.83.03 5.66-.02 8.5-.16 2.61-2.14 4.86-4.73 5.37-2.67.55-5.5-1.09-6.18-3.69-.69-2.58 1.25-5.22 3.93-5.32v4.02c-1.23-.05-2.26 1.18-2.03 2.43.21 1.16 1.47 1.83 2.52 1.46 1.15-.36 1.84-1.58 1.68-2.78-.05-4.46-.02-8.91-.03-13.37-.01-1.63-.01-3.26-.01-4.89-.84.23-1.69.45-2.54.67-.01-.13-.02-.27-.03-.4 1.05-.29 2.1-.58 3.16-.89z"/></svg></a>
-            </div>
-            <div class="payment-methods">
-                <svg class="payment-icon" viewBox="0 0 24 24"><path d="M2 7h20v10H2z" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="6" cy="12" r="2" fill="currentColor"/><circle cx="18" cy="12" r="2" fill="currentColor"/></svg>
-                <svg class="payment-icon" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M2 10h20" stroke="currentColor" stroke-width="2"/></svg>
             </div>
         </div>
     </div>
 
     <div id="catalogPage" class="page">
         <div class="back-link" onclick="showPage('splashPage')">← BACK</div>
-        <div class="store-name">OUR COLLECTION</div>
-        <div class="products-grid" id="productsGrid">
-            </div>
+        <div class="store-name" style="font-size: 1.5rem;">COLLECTIONS</div>
+        <div class="products-grid" id="productsGrid"></div>
     </div>
 
     <div id="productDetailPage" class="page">
-        <div class="back-link" onclick="showPage('catalogPage')">← BACK TO CATALOG</div>
-        <div class="detail-container" id="productDetailContent">
-            </div>
+        <div class="mesh-glow">
+            <div class="blob blob-1"></div>
+            <div class="blob blob-2"></div>
+            <div class="blob blob-3"></div>
+        </div>
+        <div class="back-link" onclick="showPage('catalogPage')">← BACK</div>
+        <div class="detail-container" id="productDetailContent"></div>
     </div>
 
     <script>
         // ==========================================
-        //  بيانات المنتجات (ضع روابط الصور هنا)
+        //  بيانات المنتجات (ضع روابط صور PNG هنا)
         // ==========================================
         const products = [
             { id: 1, name: "UNIVERSITY HOODIE", price: "999.00", img: "Picsart_26-02-13_22-03-08-041.png" },
-            { id: 2, name: "RASPBERRY SWEAT", price: "850.00", img: "ضع_رابط_الصورة_هنا" },
-            { id: 3, name: "NY BLACK EDITION", price: "999.00", img: "ضع_رابط_الصورة_هنا" },
-            { id: 4, name: "AMAZING OVERSIZE", price: "750.00", img: "ضع_رابط_الصورة_هنا" },
-            { id: 5, name: "VINTAGE WHITE", price: "900.00", img: "ضع_رابط_الصورة_هنا" },
-            { id: 6, name: "DARK SHADOW X", price: "1100.00", img: "ضع_رابط_الصورة_هنا" }
+            { id: 2, name: "RASPBERRY SWEAT", price: "850.00", img: "رابط_الصورة_هنا" },
+            { id: 3, name: "NY BLACK EDITION", price: "999.00", img: "رابط_الصورة_هنا" },
+            { id: 4, name: "AMAZING OVERSIZE", price: "750.00", img: "رابط_الصورة_هنا" },
+            { id: 5, name: "VINTAGE WHITE", price: "900.00", img: "رابط_الصورة_هنا" },
+            { id: 6, name: "DARK SHADOW X", price: "1100.00", img: "رابط_الصورة_هنا" }
         ];
 
-        // ------------------------------------------
-        //  اعدادات طريقة الدفع (واتساب)
-        // ------------------------------------------
-        // هام جداً: اكتب رقمك هنا بدلاً من الأصفار (مع كود الدولة، مثلاً 20 لمصر)
-        const whatsappNumber = "201023708424"; 
+        const whatsappNumber = "201000000000"; // حط رقمك هنا
 
-
-        // عرض المنتجات في الشبكة
         const grid = document.getElementById('productsGrid');
         products.forEach(p => {
             const card = document.createElement('div');
             card.className = 'product-card';
             card.onclick = () => openProduct(p);
-            // استخدام onerror لوضع صورة بديلة لو الرابط غلط
             card.innerHTML = `
-                <img src="${p.img}" class="img-box" alt="${p.name}" onerror="this.src='https://placehold.co/400x500/111/444?text=No+Image'">
-                <div style="margin-top:15px; font-weight:bold; letter-spacing:2px;">${p.name}</div>
-                <div style="color:var(--gold); margin-top:5px;">LE ${p.price} EGP</div>
+                <img src="${p.img}" class="img-box" onerror="this.src='https://placehold.co/400x400/111/444?text=Product'">
+                <div style="margin-top:15px; font-weight:bold;">${p.name}</div>
+                <div style="color:var(--gold); margin-top:5px;">LE ${p.price}</div>
             `;
             grid.appendChild(card);
         });
 
-        // فتح صفحة التفاصيل وتنفيذ عملية الشراء
         function openProduct(product) {
             const detailBox = document.getElementById('productDetailContent');
             detailBox.innerHTML = `
-                <img src="${product.img}" class="detail-img" alt="${product.name}" onerror="this.src='https://placehold.co/600x700/111/444?text=No+Image'">
+                <img src="${product.img}" class="detail-img" onerror="this.src='https://placehold.co/400x400/111/444?text=Product'">
                 <div class="detail-info">
-                    <h1 style="letter-spacing:5px;">${product.name}</h1>
+                    <h1 style="letter-spacing:3px;">${product.name}</h1>
                     <div class="price-tag">LE ${product.price} EGP</div>
-                    <p style="color:#aaa; line-height:1.6; font-family: sans-serif;">
-                        خامة قطنية فاخرة 100%، تصميم حصري لبراند X STORE بلمسة عصرية وتناسب جميع المقاسات (Oversized Fit).
-                    </p>
+                    <p style="color:#ccc; font-size:0.9rem; font-family:sans-serif;">High-end streetwear fabric, handcrafted for X STORE. Exclusive limited drop.</p>
                     <div>
-                        <span style="font-size:0.8rem; color:var(--gold);">SELECT SIZE:</span>
+                        <span style="font-size:0.7rem; color:var(--gold);">SIZE:</span>
                         <div class="size-selector">
                             <div class="size-btn" onclick="selectSize(this)">S</div>
                             <div class="size-btn selected" onclick="selectSize(this)">M</div>
@@ -210,32 +187,23 @@
                         </div>
                     </div>
                     <div>
-                        <span style="font-size:0.8rem; color:var(--gold);">QUANTITY:</span><br>
+                        <span style="font-size:0.7rem; color:var(--gold);">QTY:</span><br>
                         <input type="number" class="qty-input" id="qtyInput" value="1" min="1">
                     </div>
                     <div class="action-btns">
-                        <button class="btn-buy" onclick="buyNow('${product.name}', '${product.price}')">BUY IT NOW (WHATSAPP)</button>
-                        <button class="btn-cart" onclick="alert('تمت الإضافة للسلة (تجريبي)')">ADD TO CART</button>
-                    </div>
-                    <div style="margin-top: 20px; opacity: 0.7; font-size: 0.9rem;">
-                        <span style="color:var(--gold)">Accepted Payments:</span> Cash on Delivery, Vodafone Cash, InstaPay.
+                        <button class="btn-buy" onclick="buyNow('${product.name}', '${product.price}')">BUY NOW (WHATSAPP)</button>
+                        <button class="btn-cart">ADD TO CART</button>
                     </div>
                 </div>
             `;
             showPage('productDetailPage');
         }
 
-        // دالة الشراء عبر واتساب
-        function buyNow(productName, price) {
-            const selectedSizeBtn = document.querySelector('.size-btn.selected');
-            const size = selectedSizeBtn ? selectedSizeBtn.innerText : 'Not Selected';
+        function buyNow(name, price) {
+            const size = document.querySelector('.size-btn.selected').innerText;
             const qty = document.getElementById('qtyInput').value;
-
-            // تجهيز رسالة الواتساب
-            const message = `مرحباً X STORE، أريد طلب هذا المنتج:%0A-----------------------%0Aالمنتج: ${productName}%0Aالسعر: ${price} EGP%0Aالمقاس: ${size}%0Aالكمية: ${qty}%0A-----------------------%0Aيرجى تأكيد الطلب.`;
-            
-            // فتح رابط واتساب
-            window.open(`https://wa.me/${whatsappNumber}?text=${message}`, '_blank');
+            const msg = `Order from X STORE:%0AItem: ${name}%0APrice: ${price}%0ASize: ${size}%0AQty: ${qty}`;
+            window.open(`https://wa.me/${whatsappNumber}?text=${msg}`, '_blank');
         }
 
         function selectSize(btn) {
@@ -246,28 +214,27 @@
         function showPage(pageId) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById(pageId).classList.add('active');
+            // إخفاء النجوم في صفحة المنتج لزيادة التركيز على الإضاءة المتحركة
+            document.getElementById('starfield').style.opacity = (pageId === 'productDetailPage') ? "0.2" : "1";
             window.scrollTo(0,0);
         }
 
-        // --- كود خلفية النجوم (سرعة 3.5) ---
+        // النجوم
         const canvas = document.getElementById('starfield');
         const ctx = canvas.getContext('2d');
         let stars = [];
-        const speed = 3.5;
         function initStars() {
             canvas.width = window.innerWidth; canvas.height = window.innerHeight;
             stars = [];
-            for(let i=0; i<600; i++) {
-                stars.push({ x: Math.random()*canvas.width-canvas.width/2, y: Math.random()*canvas.height-canvas.height/2, z: Math.random()*canvas.width, o: Math.random() });
-            }
+            for(let i=0; i<400; i++) stars.push({ x: Math.random()*canvas.width-canvas.width/2, y: Math.random()*canvas.height-canvas.height/2, z: Math.random()*canvas.width, o: Math.random() });
         }
         function drawStars() {
             ctx.fillStyle = "black"; ctx.fillRect(0, 0, canvas.width, canvas.height);
-            for(let i=0; i<stars.length; i++) {
-                let s = stars[i]; s.z -= speed; if (s.z <= 0) s.z = canvas.width;
+            for(let s of stars) {
+                s.z -= 3; if (s.z <= 0) s.z = canvas.width;
                 let x = (s.x / s.z) * canvas.width + canvas.width/2;
                 let y = (s.y / s.z) * canvas.height + canvas.height/2;
-                let r = (1 - s.z/canvas.width) * 2.5;
+                let r = (1 - s.z/canvas.width) * 2;
                 ctx.beginPath(); ctx.fillStyle = `rgba(255, 255, 255, ${s.o})`; ctx.arc(x, y, r, 0, Math.PI*2); ctx.fill();
             }
             requestAnimationFrame(drawStars);
