@@ -9,86 +9,88 @@
 
         body, html {
             margin: 0; padding: 0; width: 100%; height: 100%;
-            overflow: hidden; background-color: #000;
-            font-family: 'Orbitron', sans-serif;
-            display: flex; flex-direction: column;
-            align-items: center; justify-content: space-between;
+            background-color: #000; font-family: 'Orbitron', sans-serif;
+            color: white; overflow-x: hidden;
         }
 
-        /* خلفية النجوم المتحركة */
+        /* خلفية النجوم الثابتة عبر الصفحات */
         #starfield {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;
         }
 
-        /* الحاوية الرئيسية */
-        .content-wrapper {
-            position: relative; z-index: 10;
-            display: flex; flex-direction: column;
-            align-items: center; justify-content: center;
-            height: 100vh; width: 100%;
-            padding: 40px 0;
+        /* حاوية الصفحات */
+        .page {
+            position: relative; z-index: 10; width: 100%; min-height: 100vh;
+            display: none; flex-direction: column; align-items: center;
         }
 
-        /* تصميم اللوجو العلوي (كما في الصورة) */
-        .logo-section {
-            flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
-        }
+        .active { display: flex; }
 
-        .brand-logo {
-            width: 150px; height: 150px; cursor: grab;
-            perspective: 1000px; touch-action: none;
-            filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.8));
+        /* --- تصميم الصفحة الأولى (Splash) --- */
+        .splash-content { justify-content: space-between; height: 100vh; padding: 40px 0; }
+        
+        .brand-logo { 
+            width: 150px; height: 150px; cursor: grab; perspective: 1000px; 
+            filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.8)); 
         }
-
-        #logo-mesh {
-            width: 100%; height: 100%; transform-style: preserve-3d; transition: transform 0.1s linear;
-        }
+        #logo-mesh { width: 100%; height: 100%; transform-style: preserve-3d; transition: transform 0.1s linear; }
 
         .store-name {
             color: #fff; font-size: 1.8rem; font-weight: 900; letter-spacing: 8px;
             margin-top: 10px; text-transform: uppercase;
-            text-shadow: 0 0 10px rgba(255, 215, 0, 0.6), 0 0 20px rgba(255, 215, 0, 0.3);
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.6);
         }
 
-        /* القائمة المركزية (مطابقة للصورة) */
-        .main-menu {
-            flex: 1; display: flex; flex-direction: column; 
-            align-items: center; justify-content: center; gap: 40px;
-        }
-
+        .main-menu { display: flex; flex-direction: column; align-items: center; gap: 40px; }
         .menu-item {
-            color: #fff; font-size: 1.5rem; font-weight: 400; letter-spacing: 10px;
-            text-decoration: none; opacity: 0.7; transition: 0.4s all ease;
-            cursor: pointer; position: relative;
+            color: #fff; font-size: 1.5rem; letter-spacing: 10px; text-decoration: none;
+            opacity: 0.7; transition: 0.4s; cursor: pointer;
+        }
+        .menu-item:hover { opacity: 1; text-shadow: 0 0 20px #FFD700; transform: scale(1.1); }
+
+        /* --- تصميم صفحة المنتجات (Home Page) --- */
+        .products-container {
+            width: 90%; max-width: 1200px; padding: 50px 0;
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 40px; justify-items: center;
         }
 
-        .menu-item:hover {
-            opacity: 1; transform: scale(1.1);
-            text-shadow: 0 0 15px rgba(255, 255, 255, 0.8), 0 0 30px rgba(255, 215, 0, 0.5);
+        .product-card {
+            width: 100%; display: flex; flex-direction: column; align-items: center;
+            transition: 0.4s; cursor: pointer;
         }
 
-        /* شريط السوشيال ميديا السفلي */
-        .footer-section {
-            flex: 1; display: flex; align-items: flex-end; justify-content: center;
-            padding-bottom: 50px; gap: 40px;
+        /* مكان الصورة مع التوهج */
+        .image-placeholder {
+            width: 100%; aspect-ratio: 1/1.2; background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 215, 0, 0.2); border-radius: 15px;
+            position: relative; display: flex; align-items: center; justify-content: center;
+            overflow: hidden; transition: 0.5s;
         }
 
-        .social-link svg {
-            width: 24px; height: 24px; fill: #fff; opacity: 0.6; transition: 0.3s;
+        /* تأثير التوهج عند التمرير بالماوس */
+        .product-card:hover .image-placeholder {
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+            border-color: #FFD700;
         }
 
-        .social-link:hover svg {
-            opacity: 1; transform: translateY(-5px);
-            filter: drop-shadow(0 0 10px #FFD700);
+        .image-placeholder::before {
+            content: 'YOUR IMAGE'; color: rgba(255,255,255,0.2); font-size: 0.8rem;
         }
 
-        /* تأثير الخط الذهبي تحت العنصر عند التمرير */
-        .menu-item::after {
-            content: ''; position: absolute; bottom: -10px; left: 50%; width: 0; height: 2px;
-            background: linear-gradient(90deg, transparent, #FFD700, transparent);
-            transition: 0.4s; transform: translateX(-50%);
+        .product-info { text-align: center; margin-top: 15px; }
+        .product-title { font-size: 1rem; letter-spacing: 2px; margin-bottom: 5px; color: #eee; }
+        .product-price { color: #FFD700; font-weight: bold; font-size: 0.9rem; }
+
+        .back-btn {
+            margin-top: 30px; padding: 10px 20px; border: 1px solid #FFD700;
+            color: #FFD700; cursor: pointer; background: transparent; letter-spacing: 3px;
         }
-        .menu-item:hover::after { width: 100%; }
+
+        /* السوشيال ميديا */
+        .social-bar { padding-bottom: 40px; display: flex; gap: 30px; }
+        .social-link svg { width: 22px; fill: white; opacity: 0.6; transition: 0.3s; }
+        .social-link:hover svg { opacity: 1; filter: drop-shadow(0 0 8px #FFD700); }
 
     </style>
 </head>
@@ -96,14 +98,13 @@
 
     <canvas id="starfield"></canvas>
 
-    <div class="content-wrapper">
-        <div class="logo-section">
+    <div id="splashPage" class="page splash-content active">
+        <div style="display: flex; flex-direction: column; align-items: center;">
             <div class="brand-logo" id="logoContainer">
                 <div id="logo-mesh">
                     <svg viewBox="0 0 200 200">
-                        <g stroke="#ffffff" stroke-width="15" fill="none" stroke-linecap="square">
-                            <path d="M50,150 L150,50" />
-                            <path d="M150,150 L50,50" />
+                        <g stroke="#ffffff" stroke-width="15" fill="none">
+                            <path d="M50,150 L150,50" /><path d="M150,150 L50,50" />
                         </g>
                         <path d="M70,170 Q100,160 130,170" stroke="#FFD700" stroke-width="4" fill="none" />
                     </svg>
@@ -113,12 +114,12 @@
         </div>
 
         <nav class="main-menu">
-            <a href="#" class="menu-item">HOME</a>
-            <a href="#" class="menu-item">CATALOG</a>
-            <a href="#" class="menu-item">CONTACT</a>
+            <div class="menu-item" onclick="showPage('homePage')">HOME</div>
+            <div class="menu-item">CATALOG</div>
+            <div class="menu-item">CONTACT</div>
         </nav>
 
-        <div class="footer-section">
+        <div class="social-bar">
             <a href="https://www.instagram.com/xce____7oda__x?igsh=cmI5aXd4OHp1cDhl" target="_blank" class="social-link">
                 <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.069-4.85.069-3.204 0-3.584-.012-4.849-.069-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
             </a>
@@ -128,74 +129,90 @@
         </div>
     </div>
 
+    <div id="homePage" class="page">
+        <div class="store-name" style="margin-top: 30px;">X STORE PRODUCTS</div>
+        
+        <div class="products-container">
+            <div class="product-card">
+                <div class="image-placeholder"></div>
+                <div class="product-info">
+                    <div class="product-title">UNIVERSITY HOODIE</div>
+                    <div class="product-price">LE 999.00 EGP</div>
+                </div>
+            </div>
+
+            <div class="product-card">
+                <div class="image-placeholder"></div>
+                <div class="product-info">
+                    <div class="product-title">AMAZING SWEATSHIRT</div>
+                    <div class="product-price">LE 999.00 EGP</div>
+                </div>
+            </div>
+
+            <div class="product-card">
+                <div class="image-placeholder"></div>
+                <div class="product-info">
+                    <div class="product-title">NY SPECIAL EDITION</div>
+                    <div class="product-price">LE 999.00 EGP</div>
+                </div>
+            </div>
+
+            <div class="product-card">
+                <div class="image-placeholder"></div>
+                <div class="product-info">
+                    <div class="product-title">VINTAGE GREY</div>
+                    <div class="product-price">LE 999.00 EGP</div>
+                </div>
+            </div>
+            </div>
+
+        <button class="back-btn" onclick="showPage('splashPage')">RETURN TO MENU</button>
+        <div style="height: 50px;"></div>
+    </div>
+
     <script>
-        // برمجة النجوم (سرعة الفيديو المطلوبة)
+        // نظام التبديل بين الصفحات
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+            window.scrollTo(0,0);
+        }
+
+        // كود النجوم (المفضل لديك)
         const canvas = document.getElementById('starfield');
         const ctx = canvas.getContext('2d');
         let stars = [];
-        const starCount = 600; 
-        const speed = 3.5; 
+        const starCount = 600; const speed = 3.5;
 
         function init() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
+            canvas.width = window.innerWidth; canvas.height = window.innerHeight;
             stars = [];
             for(let i=0; i<starCount; i++) {
-                stars.push({
-                    x: Math.random() * canvas.width - canvas.width/2,
-                    y: Math.random() * canvas.height - canvas.height/2,
-                    z: Math.random() * canvas.width,
-                    o: Math.random()
-                });
+                stars.push({ x: Math.random()*canvas.width-canvas.width/2, y: Math.random()*canvas.height-canvas.height/2, z: Math.random()*canvas.width, o: Math.random() });
             }
         }
-
         function draw() {
-            ctx.fillStyle = "black";
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "black"; ctx.fillRect(0, 0, canvas.width, canvas.height);
             for(let i=0; i<starCount; i++) {
-                let s = stars[i];
-                s.z -= speed; 
-                if (s.z <= 0) s.z = canvas.width;
+                let s = stars[i]; s.z -= speed; if (s.z <= 0) s.z = canvas.width;
                 let x = (s.x / s.z) * canvas.width + canvas.width/2;
                 let y = (s.y / s.z) * canvas.height + canvas.height/2;
                 let radius = (1 - s.z/canvas.width) * 2.5;
-                ctx.beginPath();
-                ctx.fillStyle = `rgba(255, 255, 255, ${s.o})`;
-                ctx.arc(x, y, radius, 0, Math.PI*2);
-                ctx.fill();
+                ctx.beginPath(); ctx.fillStyle = `rgba(255, 255, 255, ${s.o})`; ctx.arc(x, y, radius, 0, Math.PI*2); ctx.fill();
             }
             requestAnimationFrame(draw);
         }
+        window.addEventListener('resize', init); init(); draw();
 
-        window.addEventListener('resize', init);
-        init(); draw();
-
-        // حركة تدوير اللوجو الاحترافية
+        // تدوير اللوجو
         const container = document.getElementById('logoContainer');
         const mesh = document.getElementById('logo-mesh');
         let isDown = false; let startX, startY;
-
-        const start = (e) => { 
-            isDown = true; 
-            startX = (e.pageX || e.touches[0].pageX); 
-            startY = (e.pageY || e.touches[0].pageY); 
-            mesh.style.transition = "none"; 
-        };
-        const move = (e) => { 
-            if(!isDown) return; 
-            let x = (e.pageX || e.touches[0].pageX); 
-            let y = (e.pageY || e.touches[0].pageY);
-            let rotY = (x - startX) * 0.5; 
-            let rotX = (startY - y) * 0.5;
-            mesh.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg)`; 
-        };
-        const end = () => { 
-            isDown = false; 
-            mesh.style.transition = "transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275)"; 
-            mesh.style.transform = `rotateX(0deg) rotateY(0deg)`; 
-        };
-
+        const start = (e) => { isDown = true; startX = (e.pageX || e.touches[0].pageX); startY = (e.pageY || e.touches[0].pageY); mesh.style.transition = "none"; };
+        const move = (e) => { if(!isDown) return; let x = (e.pageX || e.touches[0].pageX); let y = (e.pageY || e.touches[0].pageY);
+            let rotY = (x - startX) * 0.5; let rotX = (startY - y) * 0.5;
+            mesh.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg)`; };
+        const end = () => { isDown = false; mesh.style.transition = "transform 0.8s ease"; mesh.style.transform = `rotateX(0deg) rotateY(0deg)`; };
         container.addEventListener('mousedown', start); window.addEventListener('mousemove', move); window.addEventListener('mouseup', end);
         container.addEventListener('touchstart', start); window.addEventListener('touchmove', move); window.addEventListener('touchend', end);
     </script>
